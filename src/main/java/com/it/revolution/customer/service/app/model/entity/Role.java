@@ -1,4 +1,4 @@
-package com.it.revolution.customer.service.app.entity;
+package com.it.revolution.customer.service.app.model.entity;
 
 import org.springframework.security.core.GrantedAuthority;
 

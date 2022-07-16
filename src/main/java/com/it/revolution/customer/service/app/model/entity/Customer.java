@@ -1,9 +1,10 @@
-package com.it.revolution.customer.service.app.entity;
+package com.it.revolution.customer.service.app.model.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 
 import javax.persistence.*;
 import java.time.LocalDate;
