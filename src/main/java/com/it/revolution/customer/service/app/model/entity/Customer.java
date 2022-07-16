@@ -1,9 +1,10 @@
-package com.it.revolution.customer.service.app.entity;
+package com.it.revolution.customer.service.app.model.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -40,10 +41,10 @@ public class Customer implements UserDetails {
     @Column(name = "activation_code")
     private String activationCode;
 
-    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
+    @ElementCollection(targetClass = com.it.revolution.customer.service.app.entity.Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    private Set<Role> roles;
+    private Set<com.it.revolution.customer.service.app.entity.Role> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
