@@ -7,3 +7,22 @@ spring:
     generate-ddl: true
     show-sql: true
     open-in-view: false
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+cloud:
+  aws:
+    credentials:
+      access-key: AKIA6ROV2FR4F6YEFOHP
+      secret-key: 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
+    region:
+      static: eu-central-1
+    stack:
+      auto: false
+
+amazon:
+  s3:
+    bucket:
+      name: 4vesla
