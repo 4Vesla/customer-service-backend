@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,12 +28,20 @@ public class CustomerService implements UserDetailsService {
     private final CustomerRepository customerRepository;
     private final CustomerPaginationRepository customerPaginationRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     public Optional<Customer> findById(Long id) {
         return customerRepository.findById(id);
     }
 
     public Optional<Customer> findByUsername(String email) {
         return customerRepository.findByEmail(email);
+    }
+
+    public Customer findByEmailAndPassword(String email, String password) {
+        return customerRepository.findByEmail(email)
+                .filter(c->passwordEncoder.matches(password, c.getPassword()))
+                .orElse(null);
     }
 
     public Customer save(Customer customer) {
