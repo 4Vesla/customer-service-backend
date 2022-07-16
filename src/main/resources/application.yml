@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://customerservice.cqokpt4nuw0j.eu-central-1.rds.amazonaws.com/customer_service
+    username: postgres
+    password: customer-service
+  jpa:
+    generate-ddl: true
+    show-sql: true
+    open-in-view: false
