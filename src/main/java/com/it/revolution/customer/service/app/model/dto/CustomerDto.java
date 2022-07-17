@@ -23,4 +23,6 @@ public class CustomerDto {
     @JsonProperty("birthDate")
     private LocalDate birthDate;
 
+    @JsonProperty("photoUrl")
+    private String photoUrl;
 }
