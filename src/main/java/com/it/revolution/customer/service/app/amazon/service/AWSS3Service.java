@@ -39,6 +39,12 @@ public class AWSS3Service implements FileService {
         return amazonS3Client.getResourceUrl(bucketName, key);
     }
 
+    @Override
+    public void deleteFile(String fileUrl) {
+        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/"));
+        amazonS3Client.deleteObject(settings.getBucket().getName(), fileName);
+    }
+
     private ObjectMetadata createObjectMetadata(MultipartFile file) {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());
