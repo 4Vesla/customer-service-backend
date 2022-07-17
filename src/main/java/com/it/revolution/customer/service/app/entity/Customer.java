@@ -40,6 +40,9 @@ public class Customer implements UserDetails {
     @Column(name = "activation_code")
     private String activationCode;
 
+    @Column(name = "photo_url")
+    private String photoUrl;
+
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
