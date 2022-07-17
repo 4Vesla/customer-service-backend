@@ -3,16 +3,17 @@ package com.it.revolution.customer.service.app.service;
 import com.it.revolution.customer.service.app.model.entity.Customer;
 import com.it.revolution.customer.service.app.repository.CustomerPaginationRepository;
 import com.it.revolution.customer.service.app.repository.CustomerRepository;
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +49,13 @@ public class CustomerService implements UserDetailsService {
         return customerRepository.save(customer);
     }
 
+    public void delete(Long id) throws NotFoundException {
+        if (customerRepository.findById(id).isEmpty()) {
+            throw new NotFoundException(String.format("Customer with id = %s was not found", id));
+        }
+        customerRepository.delete(Customer.of(id));
+    }
+
     public boolean existsByUsername(String username) {
         return customerRepository.existsByEmail(username);
     }
@@ -67,6 +75,30 @@ public class CustomerService implements UserDetailsService {
         int pageNumber = nonNull(cursor) ? cursor : 0;
         int pageSize = nonNull(limit) ? limit : PAGE_SIZE;
         return PageRequest.of(pageNumber, pageSize);
+    }
+
+    public Customer update(Customer entity) throws NotFoundException {
+        Optional<Customer> customerOpt = customerRepository.findById(entity.getId());
+        if (customerOpt.isPresent()) {
+            Customer result = mergeFields(customerOpt.get(), entity);
+            return customerRepository.save(result);
+        } else {
+            throw new NotFoundException(String.format("Customer with id = %s was not found", entity.getId()));
+        }
+    }
+
+    private Customer mergeFields(Customer updatable, Customer customer) {
+        Optional.ofNullable(customer.getName())
+                .ifPresent(updatable::setName);
+        Optional.ofNullable(customer.getSurname())
+                .ifPresent(updatable::setSurname);
+        Optional.ofNullable(customer.getEmail())
+                .ifPresent(updatable::setEmail);
+        Optional.ofNullable(customer.getPhoneNumber())
+                .ifPresent(updatable::setPhoneNumber);
+        Optional.ofNullable(customer.getBirthDate())
+                .ifPresent(updatable::setBirthDate);
+        return updatable;
     }
 
 }

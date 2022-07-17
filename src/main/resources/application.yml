@@ -5,7 +5,7 @@ spring:
     password: customer-service
   jpa:
     generate-ddl: false
-    show-sql: true
+    show-sql: false
     open-in-view: false
     hibernate:
       ddl-auto: validate
