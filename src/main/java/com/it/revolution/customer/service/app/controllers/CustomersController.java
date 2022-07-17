@@ -44,7 +44,7 @@ public class CustomersController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CustomerDto> update(@PathVariable Long id,
-                                           @RequestBody CustomerDto customerDto) throws NotFoundException {
+                                              CustomerDto customerDto) throws NotFoundException {
         Customer entity = customerMapper.dtoToEntity(customerDto);
         entity.setId(id);
 
