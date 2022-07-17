@@ -41,16 +41,21 @@ public class Customer implements UserDetails {
     @Column(name = "activation_code")
     private String activationCode;
 
-    public static Customer of(Long id) {
-        Customer customer = new Customer();
-        customer.setId(id);
-        return customer;
-    }
+    @Column(name = "photo_url")
+    private String photoUrl;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
+
+    /**
+     * Checks whether Customer account is confirmed.<br>
+     * @return true if activationCode is an empty string, otherwise false
+     * */
+    public boolean isActivated() {
+        return activationCode.isEmpty();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -80,6 +85,12 @@ public class Customer implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public static Customer of(Long id) {
+        Customer customer = new Customer();
+        customer.setId(id);
+        return customer;
     }
 
 }
