@@ -1,6 +1,7 @@
 package com.it.revolution.customer.service.app.service;
 
 import com.it.revolution.customer.service.app.amazon.service.AWSS3Service;
+import com.it.revolution.customer.service.app.exception.TakenEmailException;
 import com.it.revolution.customer.service.app.mapper.CustomerMapper;
 import com.it.revolution.customer.service.app.model.dto.CustomerDto;
 import com.it.revolution.customer.service.app.model.entity.Customer;
@@ -100,8 +101,11 @@ public class CustomerService implements UserDetailsService {
         }
     }
 
-    public Customer register(CustomerDto customerDto, String password, MultipartFile photo){
+    public Customer register(CustomerDto customerDto, String password, MultipartFile photo) throws TakenEmailException {
         Customer customer = customerMapper.dtoToEntity(customerDto);
+        if (existsByUsername(customer.getEmail())){
+            throw new TakenEmailException(customer.getEmail());
+        }
         customer.setPassword(passwordEncoder.encode(password));
         customer.setActivationCode(UUID.randomUUID().toString());
         String url = s3Service.uploadFile(photo);
