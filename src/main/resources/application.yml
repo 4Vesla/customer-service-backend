@@ -46,4 +46,4 @@ jwt:
   secret: 4vesla
 
 web:
-  endpoint: "localhost:8080"
+  endpoint: "roman-ko.net"
