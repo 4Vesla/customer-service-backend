@@ -64,9 +64,11 @@ public class CustomerService implements UserDetailsService {
     }
 
     public void delete(Long id) throws NotFoundException {
-        if (customerRepository.findById(id).isEmpty()) {
+        Optional<Customer> customer = customerRepository.findById(id);
+        if (customer.isEmpty()) {
             throw new NotFoundException(String.format("Customer with id = %s was not found", id));
         }
+        customer.ifPresent(c->fileService.deleteFile(c.getPhotoUrl()));
         customerRepository.delete(Customer.of(id));
     }
 
