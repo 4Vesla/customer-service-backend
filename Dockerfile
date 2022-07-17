@@ -1,25 +1,27 @@
-FROM openjdk:17-jdk-alpine as build
+FROM openjdk:11 as build
 
 WORKDIR /workspace
 
 # Copy pom.xml and source code
 COPY . .
 
-ARG ENV_NAME
+ARG S3_USER_ACCESS_KEY
+ARG S3_USER_SECRET_KEY
+ARG SPRING_MAIL_PASSWORD
 
 # Build jar file
-RUN ./mvnw -s settings.xml clean package -Denv.ENV_NAME=${ENV_NAME}
+RUN ./mvnw clean package -Denv.S3_USER_ACCESS_KEY=${S3_USER_ACCESS_KEY} -Denv.S3_USER_SECRET_KEY=${S3_USER_SECRET_KEY} -Denv.SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
 
 ###########################################################
 # Running stage
 ###########################################################
-FROM openjdk:17-jdk-alpine
+FROM openjdk:11
 
 WORKDIR /app
 
 COPY --from=build /workspace/target/customer-service-*.jar application.jar
 
-EXPOSE 8081
+EXPOSE 8080
 
 CMD ["java", \
     "-Xms1G", \
@@ -45,5 +47,5 @@ CMD ["java", \
 #
 #
 # Running locally:
-# docker run -it --rm --publish 8091:8091 customer-service
+# docker run -it --rm --publish 8080:8081 customer-service
 #
