@@ -25,6 +25,7 @@ public class CustomerMapper {
         dto.setBirthDate(model.getBirthDate());
         dto.setPhoneNumber(model.getPhoneNumber());
         dto.setPhotoUrl(model.getPhotoUrl());
+        dto.setActivated(model.isActivated());
         return dto;
     }
 

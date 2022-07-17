@@ -1,10 +1,15 @@
 package com.it.revolution.customer.service.app.service;
 
+import com.it.revolution.customer.service.app.amazon.service.AWSS3Service;
+import com.it.revolution.customer.service.app.mapper.CustomerMapper;
+import com.it.revolution.customer.service.app.model.dto.CustomerDto;
 import com.it.revolution.customer.service.app.model.entity.Customer;
+import com.it.revolution.customer.service.app.model.entity.Role;
 import com.it.revolution.customer.service.app.repository.CustomerPaginationRepository;
 import com.it.revolution.customer.service.app.repository.CustomerRepository;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,9 +18,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.Objects.nonNull;
 
@@ -23,12 +28,21 @@ import static java.util.Objects.nonNull;
 @RequiredArgsConstructor
 public class CustomerService implements UserDetailsService {
 
+    @Value("${web.endpoint}")
+    private String endpointUrl;
+
     private final static Integer PAGE_SIZE = 10;
 
     private final CustomerRepository customerRepository;
     private final CustomerPaginationRepository customerPaginationRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final MailSenderService mailSender;
+
+    private final AWSS3Service s3Service;
+
+    private final CustomerMapper customerMapper;
 
     public Optional<Customer> findById(Long id) {
         return customerRepository.findById(id);
@@ -86,6 +100,18 @@ public class CustomerService implements UserDetailsService {
         }
     }
 
+    public Customer register(CustomerDto customerDto, String password, MultipartFile photo){
+        Customer customer = customerMapper.dtoToEntity(customerDto);
+        customer.setPassword(passwordEncoder.encode(password));
+        customer.setActivationCode(UUID.randomUUID().toString());
+        String url = s3Service.uploadFile(photo);
+        customer.setPhotoUrl(url);
+        customer.setRoles(Set.of(Role.USER));
+        Customer registered = customerRepository.save(customer);
+        sendMessage(registered);
+        return registered;
+    }
+
     private Customer mergeFields(Customer updatable, Customer customer) {
         Optional.ofNullable(customer.getName())
                 .ifPresent(updatable::setName);
@@ -98,6 +124,23 @@ public class CustomerService implements UserDetailsService {
         Optional.ofNullable(customer.getBirthDate())
                 .ifPresent(updatable::setBirthDate);
         return updatable;
+    }
+
+    /**
+     * Sends email message with activation code to the registered Customer.<br>
+     * */
+    private void sendMessage(Customer customer) {
+        String email = customer.getEmail();
+        if (Objects.nonNull(email) && !email.isBlank()) {
+            String message = String.format(
+                    "Hello, %s\nWelcome to the 4vesla site. You are trying to create new account, please follow this link to http://%s/registration/activate/%d/%s",
+                    customer.getName(),
+                    endpointUrl,
+                    customer.getId(),
+                    customer.getActivationCode()
+            );
+            mailSender.send(email, "4vesla account confirmation.", message);
+        }
     }
 
 }

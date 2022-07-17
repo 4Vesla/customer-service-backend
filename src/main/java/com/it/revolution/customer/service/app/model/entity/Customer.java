@@ -49,6 +49,14 @@ public class Customer implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
+    /**
+     * Checks whether Customer account is confirmed.<br>
+     * @return true if activationCode is an empty string, otherwise false
+     * */
+    public boolean isActivated() {
+        return activationCode.isEmpty();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();
