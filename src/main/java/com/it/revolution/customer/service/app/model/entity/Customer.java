@@ -41,11 +41,8 @@ public class Customer implements UserDetails {
     @Column(name = "activation_code")
     private String activationCode;
 
-    public static Customer of(Long id) {
-        Customer customer = new Customer();
-        customer.setId(id);
-        return customer;
-    }
+    @Column(name = "photo_url")
+    private String photoUrl;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
@@ -80,6 +77,12 @@ public class Customer implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public static Customer of(Long id) {
+        Customer customer = new Customer();
+        customer.setId(id);
+        return customer;
     }
 
 }
