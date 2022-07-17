@@ -1,6 +1,6 @@
 package com.it.revolution.customer.service.app.service;
 
-import com.it.revolution.customer.service.app.amazon.service.AWSS3Service;
+import com.it.revolution.customer.service.app.amazon.service.FileService;
 import com.it.revolution.customer.service.app.exception.TakenEmailException;
 import com.it.revolution.customer.service.app.mapper.CustomerMapper;
 import com.it.revolution.customer.service.app.model.dto.CustomerDto;
@@ -41,7 +41,7 @@ public class CustomerService implements UserDetailsService {
 
     private final MailSenderService mailSender;
 
-    private final AWSS3Service s3Service;
+    private final FileService fileService;
 
     private final CustomerMapper customerMapper;
 
@@ -108,7 +108,7 @@ public class CustomerService implements UserDetailsService {
         }
         customer.setPassword(passwordEncoder.encode(password));
         customer.setActivationCode(UUID.randomUUID().toString());
-        String url = s3Service.uploadFile(photo);
+        String url = fileService.uploadFile(photo);
         customer.setPhotoUrl(url);
         customer.setRoles(Set.of(Role.USER));
         Customer registered = customerRepository.save(customer);
