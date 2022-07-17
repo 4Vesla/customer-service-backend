@@ -28,3 +28,6 @@ amazon:
   s3:
     bucket:
       name: 4vesla
+
+jwt:
+  secret: 4vesla

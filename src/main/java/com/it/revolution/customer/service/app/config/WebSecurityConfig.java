@@ -1,5 +1,6 @@
 package com.it.revolution.customer.service.app.config;
 
+import com.it.revolution.customer.service.app.security.jwt.JwtFilter;
 import com.it.revolution.customer.service.app.service.CustomerService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +9,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -20,18 +23,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final JwtFilter jwtFilter;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .httpBasic().disable()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .authorizeRequests()
-                .antMatchers( "/customer/**")
-                .authenticated()
-            .and()
-                .formLogin().permitAll()
-            .and()
-                .logout().permitAll()
-            .and().csrf().disable();
-
+                .antMatchers("/login", "/logout").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
