@@ -41,7 +41,7 @@ public class AWSS3Service implements FileService {
 
     @Override
     public void deleteFile(String fileUrl) {
-        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/"));
+        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/")+1);
         amazonS3Client.deleteObject(settings.getBucket().getName(), fileName);
     }
 
