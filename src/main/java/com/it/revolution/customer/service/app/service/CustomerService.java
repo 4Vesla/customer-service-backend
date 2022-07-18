@@ -2,6 +2,7 @@ package com.it.revolution.customer.service.app.service;
 
 import com.it.revolution.customer.service.app.amazon.service.FileService;
 import com.it.revolution.customer.service.app.exception.BadAuthorizedCredentialsException;
+import com.it.revolution.customer.service.app.common.settings.WebSettings;
 import com.it.revolution.customer.service.app.exception.TakenEmailException;
 import com.it.revolution.customer.service.app.mapper.CustomerMapper;
 import com.it.revolution.customer.service.app.model.dto.CustomerDto;
@@ -11,7 +12,6 @@ import com.it.revolution.customer.service.app.repository.CustomerPaginationRepos
 import com.it.revolution.customer.service.app.repository.CustomerRepository;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,27 +24,23 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Service
 @RequiredArgsConstructor
 public class CustomerService implements UserDetailsService {
 
-    @Value("${web.host.backend}")
-    private String endpointUrl;
-
     private final static Integer PAGE_SIZE = 10;
 
     private final CustomerRepository customerRepository;
     private final CustomerPaginationRepository customerPaginationRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final MailSenderService mailSender;
-
     private final FileService fileService;
-
     private final CustomerMapper customerMapper;
+    private final ValidationService validationService;
+    private final WebSettings webSettings;
 
     public Optional<Customer> findById(Long id) {
         return customerRepository.findById(id);
@@ -104,19 +100,32 @@ public class CustomerService implements UserDetailsService {
         }
     }
 
-    public Customer register(CustomerDto customerDto, String password, MultipartFile photo) throws TakenEmailException {
+    public Customer register(CustomerDto customerDto, String password, MultipartFile photo) throws TakenEmailException, IllegalStateException {
+        IllegalStateException exception = validationService.validateCustomerDto(customerDto);
+        if (nonNull(exception)) {
+            throw exception;
+        }
+
         Customer customer = customerMapper.dtoToEntity(customerDto);
         if (existsByUsername(customer.getEmail())){
             throw new TakenEmailException(customer.getEmail());
         }
         customer.setPassword(passwordEncoder.encode(password));
         customer.setActivationCode(UUID.randomUUID().toString());
-        String url = fileService.uploadFile(photo);
-        customer.setPhotoUrl(url);
+        String photoUrl = uploadPhoto(photo);
+        customer.setPhotoUrl(photoUrl);
         customer.setRoles(Set.of(Role.USER));
         Customer registered = customerRepository.save(customer);
         sendMessage(registered);
         return registered;
+    }
+
+    private String uploadPhoto(MultipartFile photo) {
+        if (isNull(photo)) {
+            return null;
+        }
+
+        return fileService.uploadFile(photo);
     }
 
     private Customer mergeFields(Customer updatable, Customer customer) {
@@ -142,7 +151,7 @@ public class CustomerService implements UserDetailsService {
             String message = String.format(
                     "Hello, %s\nWelcome to the 4vesla site. You are trying to create new account, please follow this link http://%s/activate/email/%d/%s to accomplish registration process.",
                     customer.getName(),
-                    endpointUrl,
+                    webSettings.getBackend().getHost(),
                     customer.getId(),
                     customer.getActivationCode()
             );
