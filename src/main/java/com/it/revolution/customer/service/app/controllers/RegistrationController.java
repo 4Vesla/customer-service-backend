@@ -33,17 +33,4 @@ public class RegistrationController {
         );
     }
 
-    @GetMapping("/activate/{id}/{activationCode}")
-    public String activate(@PathVariable(name = "id") Long id,
-                           @PathVariable(name = "activationCode") String code) {
-        Customer customer = customerService.findById(id).orElse(null);
-        if (Objects.nonNull(customer) && customer.getActivationCode().equals(code)) {
-            customer.setActivationCode("");
-            customerService.save(customer);
-            //TODO redirect to front endpoint
-            return "Your account has been activated successfully! Visit your home page.";
-        }
-        return "Ooops, something went wrong.";
-    }
-
 }
