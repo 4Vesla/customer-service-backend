@@ -46,4 +46,7 @@ jwt:
   secret: 4vesla
 
 web:
-  endpoint: "roman-ko.net"
+  backend:
+    host: "localhost:8080"
+  frontend:
+    host: "nashdomen.com"
