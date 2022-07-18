@@ -3,11 +3,9 @@ package com.it.revolution.customer.service.app.controllers;
 import com.it.revolution.customer.service.app.common.ControllerUtil;
 import com.it.revolution.customer.service.app.exception.BadAuthorizedCredentialsException;
 import com.it.revolution.customer.service.app.exception.TakenEmailException;
-import com.it.revolution.customer.service.app.model.dto.RegistrationResponseDto;
 import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -37,8 +35,8 @@ public class GlobalControllerExceptionHandler {
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(BadAuthorizedCredentialsException.class)
-    public void handleBadAuthorizedCredentials(BadAuthorizedCredentialsException e) {
-        log.warn(e.getMessage());
+    public ResponseEntity<Map<String, String>> handleBadAuthorizedCredentials(BadAuthorizedCredentialsException e) {
+       return ControllerUtil.getErrorResponse(e, HttpStatus.FORBIDDEN);
     }
 
 }
