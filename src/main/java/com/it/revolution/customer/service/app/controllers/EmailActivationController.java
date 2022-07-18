@@ -1,10 +1,10 @@
 package com.it.revolution.customer.service.app.controllers;
 
+import com.it.revolution.customer.service.app.common.settings.WebSettings;
 import com.it.revolution.customer.service.app.model.entity.Customer;
 import com.it.revolution.customer.service.app.service.CustomerService;
+import lombok.RequiredArgsConstructor;
 import org.apache.http.client.utils.URIBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,18 +17,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/activate")
 public class EmailActivationController {
 
-    @Value("${web.host.frontend}")
-    private String frontedHost;
-
+    private final WebSettings webSettings;
     private final CustomerService customerService;
-
-    @Autowired
-    public EmailActivationController(CustomerService customerService) {
-        this.customerService = customerService;
-    }
 
     @GetMapping("/email/{id}/{activationCode}")
     public RedirectView activate(@PathVariable(name = "id") Long id,
@@ -41,7 +35,7 @@ public class EmailActivationController {
         Optional<Customer> customerOptional = Optional.ofNullable(customer);
         URI uri = new URIBuilder()
                 .setScheme("http")
-                .setHost(frontedHost)
+                .setHost(webSettings.getFrontend().getHost())
                 .setPath("/login")
                 .addParameter("emailConfirm", String.valueOf(customerOptional.map(Customer::isActivated).orElse(false)))
                 .addParameter("email", customerOptional.map(Customer::getEmail).orElse("")).build();

@@ -1,4 +1,4 @@
-package com.it.revolution.customer.service.app.amazon.settings;
+package com.it.revolution.customer.service.app.common.settings;
 
 import com.it.revolution.customer.service.app.common.AbstractSettings;
 import lombok.Data;
@@ -11,10 +11,13 @@ import javax.validation.constraints.NotNull;
 @Data
 @Configuration
 @EqualsAndHashCode(callSuper = true)
-@ConfigurationProperties(prefix = "amazon.s3")
-public class AWSS3Settings extends AbstractSettings {
+@ConfigurationProperties(prefix = "web")
+public class WebSettings extends AbstractSettings {
 
     @NotNull
-    private Bucket bucket;
+    private Backend backend;
+
+    @NotNull
+    private Frontend frontend;
 
 }
