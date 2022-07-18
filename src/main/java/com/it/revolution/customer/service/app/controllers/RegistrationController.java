@@ -16,6 +16,7 @@ import java.util.Objects;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/registration")
+@CrossOrigin
 public class RegistrationController {
 
     private final CustomerService customerService;

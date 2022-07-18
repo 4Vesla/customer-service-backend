@@ -5,10 +5,7 @@ import com.it.revolution.customer.service.app.model.entity.Customer;
 import com.it.revolution.customer.service.app.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.client.utils.URIBuilder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.net.URI;
@@ -19,6 +16,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/activate")
+@CrossOrigin
 public class EmailActivationController {
 
     private final WebSettings webSettings;

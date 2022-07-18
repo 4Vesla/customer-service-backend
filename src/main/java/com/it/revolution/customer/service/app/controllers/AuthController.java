@@ -7,11 +7,13 @@ import com.it.revolution.customer.service.app.security.jwt.dto.AuthRequest;
 import com.it.revolution.customer.service.app.security.jwt.dto.AuthResponse;
 import com.it.revolution.customer.service.app.service.CustomerService;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
+@CrossOrigin
 public class AuthController {
 
     private final CustomerService customerService;

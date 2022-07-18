@@ -19,6 +19,7 @@ import static java.util.Objects.nonNull;
 @RestController
 @RequestMapping("/customers")
 @RequiredArgsConstructor
+@CrossOrigin
 public class CustomersController {
 
     private final CustomerService customerService;
