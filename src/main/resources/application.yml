@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:postgresql://customerservice.cqokpt4nuw0j.eu-central-1.rds.amazonaws.com/customer_service
     username: postgres
-    password: customer-service
+    password: ${CUSTOMER_SERVICE_PASSWORD}
   jpa:
     generate-ddl: false
     show-sql: false
@@ -49,6 +49,6 @@ jwt:
 
 web:
   backend:
-    host: "${WEB_BACKEND_HOST}"
+    host: ${WEB_BACKEND_HOST}
   frontend:
-    host: "${WEB_FRONTEND_HOST}"
+    host: ${WEB_FRONTEND_HOST}
