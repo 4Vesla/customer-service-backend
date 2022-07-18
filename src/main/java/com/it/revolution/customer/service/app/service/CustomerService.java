@@ -65,7 +65,9 @@ public class CustomerService implements UserDetailsService {
         if (customer.isEmpty()) {
             throw new NotFoundException(String.format("Customer with id = %s was not found", id));
         }
-        customer.ifPresent(c->fileService.deleteFile(c.getPhotoUrl()));
+        customer
+                .filter(c->Objects.nonNull(c.getPhotoUrl()))
+                .ifPresent(c->fileService.deleteFile(c.getPhotoUrl()));
         customerRepository.delete(Customer.of(id));
     }
 
