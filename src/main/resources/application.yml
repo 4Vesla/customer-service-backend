@@ -48,4 +48,7 @@ jwt:
   secret: 4vesla
 
 web:
-  endpoint: "roman-ko.net"
+  backend:
+    host: "${WEB_BACKEND_HOST}"
+  frontend:
+    host: "${WEB_FRONTEND_HOST}"
