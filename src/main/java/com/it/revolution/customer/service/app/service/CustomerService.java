@@ -1,6 +1,7 @@
 package com.it.revolution.customer.service.app.service;
 
 import com.it.revolution.customer.service.app.amazon.service.FileService;
+import com.it.revolution.customer.service.app.exception.BadAuthorizedCredentialsException;
 import com.it.revolution.customer.service.app.exception.TakenEmailException;
 import com.it.revolution.customer.service.app.mapper.CustomerMapper;
 import com.it.revolution.customer.service.app.model.dto.CustomerDto;
@@ -53,10 +54,10 @@ public class CustomerService implements UserDetailsService {
         return customerRepository.findByEmail(email);
     }
 
-    public Customer findByEmailAndPassword(String email, String password) {
+    public Customer findByEmailAndPassword(String email, String password) throws BadAuthorizedCredentialsException {
         return customerRepository.findByEmail(email)
                 .filter(c->passwordEncoder.matches(password, c.getPassword()))
-                .orElse(null);
+                .orElseThrow(BadAuthorizedCredentialsException::new);
     }
 
     public Customer save(Customer customer) {
