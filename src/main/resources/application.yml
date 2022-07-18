@@ -46,4 +46,6 @@ jwt:
   secret: 4vesla
 
 web:
-  endpoint: "localhost:8080"
+  host:
+    backend: "localhost:8080"
+    frontend: "nashdomen.com"
