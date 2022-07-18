@@ -4,6 +4,7 @@ import com.it.revolution.customer.service.app.mapper.CustomerMapper;
 import com.it.revolution.customer.service.app.model.dto.CustomerDto;
 import com.it.revolution.customer.service.app.model.entity.Customer;
 import com.it.revolution.customer.service.app.service.CustomerService;
+import com.it.revolution.customer.service.app.service.ValidationService;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,15 +14,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.nonNull;
+
 @RestController
-@RequestMapping("/customer")
+@RequestMapping("/customers")
 @RequiredArgsConstructor
 public class CustomersController {
 
     private final CustomerService customerService;
     private final CustomerMapper customerMapper;
+    private final ValidationService validationService;
 
-    @GetMapping("/list")
+    @GetMapping
     public ResponseEntity<List<CustomerDto>> findAll(@RequestParam(required = false) Integer cursor,
                                                      @RequestParam(required = false) Integer limit) {
         List<Customer> customers = customerService.findCustomers(cursor, limit);
@@ -45,6 +49,11 @@ public class CustomersController {
     @PutMapping("/{id}")
     public ResponseEntity<CustomerDto> update(@PathVariable Long id,
                                               @RequestBody CustomerDto customerDto) throws NotFoundException {
+        IllegalStateException exception = validationService.validateCustomerDto(customerDto);
+        if (nonNull(exception)) {
+            throw exception;
+        }
+
         Customer entity = customerMapper.dtoToEntity(customerDto);
         entity.setId(id);
 

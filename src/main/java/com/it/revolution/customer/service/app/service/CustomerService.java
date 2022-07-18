@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Service
@@ -36,14 +37,11 @@ public class CustomerService implements UserDetailsService {
 
     private final CustomerRepository customerRepository;
     private final CustomerPaginationRepository customerPaginationRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final MailSenderService mailSender;
-
     private final FileService fileService;
-
     private final CustomerMapper customerMapper;
+    private final ValidationService validationService;
 
     public Optional<Customer> findById(Long id) {
         return customerRepository.findById(id);
@@ -103,19 +101,32 @@ public class CustomerService implements UserDetailsService {
         }
     }
 
-    public Customer register(CustomerDto customerDto, String password, MultipartFile photo) throws TakenEmailException {
+    public Customer register(CustomerDto customerDto, String password, MultipartFile photo) throws TakenEmailException, IllegalStateException {
+        IllegalStateException exception = validationService.validateCustomerDto(customerDto);
+        if (nonNull(exception)) {
+            throw exception;
+        }
+
         Customer customer = customerMapper.dtoToEntity(customerDto);
         if (existsByUsername(customer.getEmail())){
             throw new TakenEmailException(customer.getEmail());
         }
         customer.setPassword(passwordEncoder.encode(password));
         customer.setActivationCode(UUID.randomUUID().toString());
-        String url = fileService.uploadFile(photo);
-        customer.setPhotoUrl(url);
+        String photoUrl = uploadPhoto(photo);
+        customer.setPhotoUrl(photoUrl);
         customer.setRoles(Set.of(Role.USER));
         Customer registered = customerRepository.save(customer);
         sendMessage(registered);
         return registered;
+    }
+
+    private String uploadPhoto(MultipartFile photo) {
+        if (isNull(photo)) {
+            return null;
+        }
+
+        return fileService.uploadFile(photo);
     }
 
     private Customer mergeFields(Customer updatable, Customer customer) {
