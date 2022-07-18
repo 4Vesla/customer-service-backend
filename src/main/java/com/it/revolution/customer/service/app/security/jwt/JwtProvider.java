@@ -1,13 +1,7 @@
 package com.it.revolution.customer.service.app.security.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
-import lombok.extern.java.Log;
+import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +9,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
+@Slf4j
 @Component
-@Log
 public class JwtProvider {
 
     @Value("$(jwt.secret)")
@@ -36,15 +30,15 @@ public class JwtProvider {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException expEx) {
-            log.severe("Token expired");
+            log.info("Token expired: {}", token);
         } catch (UnsupportedJwtException unsEx) {
-            log.severe("Unsupported jwt");
+            log.info("Unsupported jwt: {}", token);
         } catch (MalformedJwtException mjEx) {
-            log.severe("Malformed jwt");
+            log.info("Malformed jwt: {}", token);
         } catch (SignatureException sEx) {
-            log.severe("Invalid signature");
+            log.info("Invalid signature: {}", token);
         } catch (Exception e) {
-            log.severe("invalid token");
+            log.info("invalid token: {}", token);
         }
         return false;
     }
