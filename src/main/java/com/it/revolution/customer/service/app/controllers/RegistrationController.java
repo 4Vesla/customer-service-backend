@@ -22,16 +22,11 @@ public class RegistrationController {
     @PostMapping
     public ResponseEntity<RegistrationResponseDto> register(CustomerDto newCustomer,
                                                               @RequestParam("password") String password,
-                                                              @RequestParam("photo") MultipartFile photo) {
-        Customer registered;
-        try {
-            registered = customerService.register(newCustomer, password, photo);
-        } catch (TakenEmailException e) {
-            return ResponseEntity.badRequest().body(
-                    RegistrationResponseDto.builder()
-                    .message(e.getMessage()).build()
-            );
-        }
+                                                              @RequestParam("photo") MultipartFile photo)
+            throws TakenEmailException {
+
+        Customer registered = customerService.register(newCustomer, password, photo);
+
         return ResponseEntity.ok(RegistrationResponseDto.builder()
                 .message("Registration succeed!")
                 .registered(registered).build()

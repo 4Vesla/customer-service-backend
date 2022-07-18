@@ -27,7 +27,7 @@ public class CustomerDto {
     private String phoneNumber;
 
     @JsonProperty("birthDate")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
     @JsonProperty("photoUrl")

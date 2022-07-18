@@ -15,6 +15,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Objects;
 
 import static org.springframework.util.StringUtils.hasText;
 
@@ -37,8 +38,10 @@ public class JwtFilter extends GenericFilterBean {
         if (token != null && jwtProvider.validateToken(token)) {
             String userLogin = jwtProvider.getLoginFromToken(token);
             UserDetails userDetails = customerService.loadUserByUsername(userLogin);
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            if (Objects.nonNull(userDetails)) {
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
         }
         filterChain.doFilter(servletRequest, servletResponse);
     }
