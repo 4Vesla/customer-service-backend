@@ -30,7 +30,7 @@ import static java.util.Objects.nonNull;
 @RequiredArgsConstructor
 public class CustomerService implements UserDetailsService {
 
-    @Value("${web.endpoint}")
+    @Value("${web.host.backend}")
     private String endpointUrl;
 
     private final static Integer PAGE_SIZE = 10;
@@ -140,7 +140,7 @@ public class CustomerService implements UserDetailsService {
         String email = customer.getEmail();
         if (Objects.nonNull(email) && !email.isBlank()) {
             String message = String.format(
-                    "Hello, %s\nWelcome to the 4vesla site. You are trying to create new account, please follow this link to http://%s/registration/activate/%d/%s",
+                    "Hello, %s\nWelcome to the 4vesla site. You are trying to create new account, please follow this link http://%s/activate/email/%d/%s to accomplish registration process.",
                     customer.getName(),
                     endpointUrl,
                     customer.getId(),
