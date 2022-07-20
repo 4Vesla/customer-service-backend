@@ -24,8 +24,6 @@ COPY --from=build /workspace/target/customer-service-*.jar application.jar
 EXPOSE 8080
 
 CMD ["java", \
-    "-Xms1G", \
-    "-Xmx1G", \
     "-XX:+UseG1GC", \
     "-XX:OnOutOfMemoryError=\"kill -9 %p\"", \
     "-XX:+HeapDumpOnOutOfMemoryError", \
@@ -40,12 +38,12 @@ CMD ["java", \
 # Building locally:
 #
 # If you already have S3_USER_ACCESS_KEY, S3_USER_SECRET_KEY and SPRING_MAIL_PASSWORD environment variable:
-# docker build --build-arg S3_USER_ACCESS_KEY S3_USER_SECRET_KEY SPRING_MAIL_PASSWORD  -t customer-service .
+# docker build --build-arg S3_USER_ACCESS_KEY --build-arg S3_USER_SECRET_KEY --build-arg SPRING_MAIL_PASSWORD  -t customer-service .
 #
 # If you don't have S3_USER_ACCESS_KEY S3_USER_SECRET_KEY SPRING_MAIL_PASSWORD environment variable:
 # docker build --build-arg S3_USER_ACCESS_KEY=value1 S3_USER_SECRET_KEY=value2 SPRING_MAIL_PASSWORD=value3 -t customer-service .
 #
 #
 # Running locally:
-# docker run -it --rm --publish 8080:8081 customer-service
+# docker run -it --rm -e S3_USER_ACCESS_KEY -e S3_USER_SECRET_KEY -e SPRING_MAIL_PASSWORD  --publish 8080:8080 customer-service
 #
