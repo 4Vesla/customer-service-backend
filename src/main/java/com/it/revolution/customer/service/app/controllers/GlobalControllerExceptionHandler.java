@@ -1,8 +1,8 @@
 package com.it.revolution.customer.service.app.controllers;
 
 import com.it.revolution.customer.service.app.common.ControllerUtil;
+import com.it.revolution.customer.service.app.exception.BadAuthorizedCredentialsException;
 import com.it.revolution.customer.service.app.exception.TakenEmailException;
-import com.it.revolution.customer.service.app.model.dto.RegistrationResponseDto;
 import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +31,12 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Map<String, String>> handleIllegalStateException(IllegalStateException e) {
         return ControllerUtil.getErrorResponse(e, HttpStatus.BAD_REQUEST);
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(BadAuthorizedCredentialsException.class)
+    public ResponseEntity<Map<String, String>> handleBadAuthorizedCredentials(BadAuthorizedCredentialsException e) {
+       return ControllerUtil.getErrorResponse(e, HttpStatus.FORBIDDEN);
     }
 
 }

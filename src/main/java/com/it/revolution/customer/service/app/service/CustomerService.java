@@ -1,6 +1,7 @@
 package com.it.revolution.customer.service.app.service;
 
 import com.it.revolution.customer.service.app.amazon.service.FileService;
+import com.it.revolution.customer.service.app.exception.BadAuthorizedCredentialsException;
 import com.it.revolution.customer.service.app.common.settings.WebSettings;
 import com.it.revolution.customer.service.app.exception.TakenEmailException;
 import com.it.revolution.customer.service.app.mapper.CustomerMapper;
@@ -49,10 +50,10 @@ public class CustomerService implements UserDetailsService {
         return customerRepository.findByEmail(email);
     }
 
-    public Customer findByEmailAndPassword(String email, String password) {
+    public Customer findByEmailAndPassword(String email, String password) throws BadAuthorizedCredentialsException {
         return customerRepository.findByEmail(email)
                 .filter(c->passwordEncoder.matches(password, c.getPassword()))
-                .orElse(null);
+                .orElseThrow(BadAuthorizedCredentialsException::new);
     }
 
     public Customer save(Customer customer) {
@@ -64,7 +65,9 @@ public class CustomerService implements UserDetailsService {
         if (customer.isEmpty()) {
             throw new NotFoundException(String.format("Customer with id = %s was not found", id));
         }
-        customer.ifPresent(c->fileService.deleteFile(c.getPhotoUrl()));
+        customer
+                .filter(c->Objects.nonNull(c.getPhotoUrl()))
+                .ifPresent(c->fileService.deleteFile(c.getPhotoUrl()));
         customerRepository.delete(Customer.of(id));
     }
 
